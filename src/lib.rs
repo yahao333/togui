@@ -3,7 +3,6 @@ mod renderer;
 mod widgets;
 mod font;
 mod layout;
-mod ui;
 
 pub mod ui;
 

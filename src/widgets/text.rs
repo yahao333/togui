@@ -17,11 +17,11 @@ impl Text {
 }
 
 impl Widget for Text {
-    fn draw(&self) {
+    fn draw(&self, renderer: &mut Renderer) {
         // 渲染实现将在后续添加
     }
 
-    fn handle_event(&mut self) {
+    fn handle_event(&mut self, event: &WindowEvent) {
         // 事件处理将在后续添加
     }
 }

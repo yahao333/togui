@@ -24,16 +24,15 @@ impl Container {
         }
     }
 
-    pub fn with_direction(mut self, direction: Direction) -> Self {
-        self.direction = direction;
-        self
-    }
-
     pub fn with_padding(mut self, padding: Padding) -> Self {
         self.padding = padding;
         self
     }
-
+    
+    pub fn with_direction(mut self, direction: Direction) -> Self {
+        self.direction = direction;
+        self
+    }
     pub fn with_alignment(mut self, alignment: Alignment) -> Self {
         self.alignment = alignment;
         self

@@ -38,7 +38,7 @@ impl UiLoader {
         F: Fn() + Send + 'static 
     {
         let (tx, rx) = channel();
-        let mut watcher = watcher(tx, Duration::from_secs(1)).unwrap();
+        let mut watcher = recommended_watcher(tx).unwrap();
 
         for path in &self.watch_paths {
             watcher.watch(path, RecursiveMode::NonRecursive).unwrap();

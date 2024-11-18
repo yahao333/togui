@@ -30,13 +30,13 @@ pub fn parse_ui(content: &str) -> Container {
 fn parse_container(container: &mut Container, line: &str) {
     // 简单的属性解析
     if line.contains("vertical") {
-        *container = container.clone().with_direction(Direction::Vertical);
+        container.with_direction(Direction::Vertical);
     }
     if line.contains("horizontal") {
-        *container = container.clone().with_direction(Direction::Horizontal);
+        container.with_direction(Direction::Horizontal);
     }
     if line.contains("center") {
-        *container = container.clone().with_alignment(Alignment::Center);
+        container.with_alignment(Alignment::Center);
     }
 }
 

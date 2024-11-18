@@ -180,4 +180,37 @@ impl Widget for Container {
             child.handle_event(event);
         }
     }
+    fn get_rect(&self) -> Rect {
+        self.rect
+    }
+
+    fn set_rect(&mut self, rect: Rect) {
+        self.rect = rect;
+        self.layout();  // 重新布局子组件
+    }
+
+    fn preferred_size(&self) -> (f32, f32) {
+        match self.direction {
+            Direction::Horizontal => {
+                let mut width = 0.0;
+                let mut max_height = 0.0;
+                for child in &self.children {
+                    let (child_width, child_height) = child.preferred_size();
+                    width += child_width;
+                    max_height = max_height.max(child_height);
+                }
+                (width, max_height)
+            }
+            Direction::Vertical => {
+                let mut max_width = 0.0;
+                let mut height = 0.0;
+                for child in &self.children {
+                    let (child_width, child_height) = child.preferred_size();
+                    max_width = max_width.max(child_width);
+                    height += child_height;
+                }
+                (max_width, height)
+            }
+        }
+    }    
 }

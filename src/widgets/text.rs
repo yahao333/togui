@@ -2,6 +2,7 @@ use winit::event::WindowEvent;
 use super::Widget;
 use crate::renderer::Renderer;
 use crate::font::Font;
+use crate::layout::Rect;
 
 pub struct Text {
     x: f32,
@@ -14,8 +15,12 @@ pub struct Text {
 impl Text {
     pub fn new(x: f32, y: f32, content: &str) -> Self {
         Self {
-            x,
-            y,
+            rect: Rect {
+                x,
+                y,
+                width: content.len() as f32 * 8.0,  // 假设每个字符宽度为8
+                height: 8.0,  // 字体高度为8
+            },
             content: content.to_string(),
             color: [255, 255, 255, 255], // 默认白色
             font: Font::default(),
@@ -34,16 +39,28 @@ impl Widget for Text {
         for c in self.content.chars() {
             self.font.render_char(
                 renderer,
-                self.x as i32 + x_offset,
-                self.y as i32,
+                self.rect.x as i32 + x_offset,
+                self.rect.y as i32,
                 c,
                 self.color
             );
-            x_offset += 8; // 每个字符宽度为 8 像素
+            x_offset += 8;
         }
     }
 
     fn handle_event(&mut self, _event: &WindowEvent) {
-        // 文本组件暂时不需要处理事件
+        // 文本组件不需要处理事件
+    }
+
+    fn get_rect(&self) -> Rect {
+        self.rect
+    }
+
+    fn set_rect(&mut self, rect: Rect) {
+        self.rect = rect;
+    }
+
+    fn preferred_size(&self) -> (f32, f32) {
+        (self.content.len() as f32 * 8.0, 8.0)
     }
 }

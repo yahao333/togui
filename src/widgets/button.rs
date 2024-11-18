@@ -3,12 +3,10 @@ use winit::event::WindowEvent;
 use super::Widget;
 use crate::renderer::Renderer;
 use crate::font::Font;
+use crate::layout::Rect;
 
 pub struct Button {
-    x: f32,
-    y: f32,
-    width: f32,
-    height: f32,
+    rect: Rect,
     label: String,
     is_hovered: bool,
     is_pressed: bool,
@@ -18,10 +16,7 @@ pub struct Button {
 impl Button {
     pub fn new(x: f32, y: f32, width: f32, height: f32, label: &str) -> Self {
         Self {
-            x,
-            y,
-            width,
-            height,
+            rect: Rect { x, y, width, height },
             label: label.to_string(),
             is_hovered: false,
             is_pressed: false,
@@ -108,19 +103,11 @@ impl Widget for Button {
         }
     }
     fn get_rect(&self) -> Rect {
-        Rect {
-            x: self.x,
-            y: self.y,
-            width: self.width,
-            height: self.height,
-        }
+        self.rect
     }
 
     fn set_rect(&mut self, rect: Rect) {
-        self.x = rect.x;
-        self.y = rect.y;
-        self.width = rect.width;
-        self.height = rect.height;
+        self.rect = rect;
     }
 
     fn preferred_size(&self) -> (f32, f32) {

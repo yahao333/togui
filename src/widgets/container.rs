@@ -1,7 +1,7 @@
 use winit::event::WindowEvent;
 use super::Widget;
 use crate::renderer::Renderer;
-use crate::layout::{Rect, Padding, Alignment};
+use crate::layout::{Rect, Padding, Alignment, Direction};
 
 pub struct Container {
     rect: Rect,
@@ -10,12 +10,6 @@ pub struct Container {
     direction: Direction,
     alignment: Alignment,
     spacing: f32,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Direction {
-    Horizontal,
-    Vertical,
 }
 
 impl Container {

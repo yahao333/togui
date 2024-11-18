@@ -31,3 +31,9 @@ pub enum Alignment {
     Center,
     End,
 }
+
+#[derive(Debug, Clone, Copy)]
+pub enum Direction {
+    Horizontal,
+    Vertical,
+}

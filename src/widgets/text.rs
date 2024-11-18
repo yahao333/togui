@@ -5,8 +5,7 @@ use crate::font::Font;
 use crate::layout::Rect;
 
 pub struct Text {
-    x: f32,
-    y: f32,
+    rect: Rect,
     content: String,
     color: [u8; 4],
     font: Font,

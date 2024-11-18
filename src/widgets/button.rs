@@ -44,10 +44,10 @@ impl Widget for Button {
         };
         
         renderer.draw_rect(
-            self.x as i32,
-            self.y as i32,
-            self.width as u32,
-            self.height as u32,
+            self.rect.x as i32,
+            self.rect.y as i32,
+            self.rect.width as u32,
+            self.rect.height as u32,
             color,
         );
 

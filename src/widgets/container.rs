@@ -28,12 +28,13 @@ impl Container {
         self.padding = padding;
         self
     }
-    
-    pub fn with_direction(mut self, direction: Direction) -> Self {
+
+    pub fn with_direction(&mut self, direction: Direction) -> &mut Self {
         self.direction = direction;
         self
     }
-    pub fn with_alignment(mut self, alignment: Alignment) -> Self {
+
+    pub fn with_alignment(&mut self, alignment: Alignment) -> &mut Self {
         self.alignment = alignment;
         self
     }

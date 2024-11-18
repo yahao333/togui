@@ -68,20 +68,102 @@ impl Container {
     }
 
     fn layout_vertical(&mut self, x: f32, y: f32, width: f32, height: f32) {
-        let mut current_y = y;
+        if self.children.is_empty() {
+            return;
+        }
+
+        // 计算所有子组件的总高度和固定高度
+        let mut total_height = 0.0;
+        let mut total_flex = 0.0;
         
+        for child in &self.children {
+            let (_, child_height) = child.preferred_size();
+            total_height += child_height;
+            total_flex += 1.0; // 未来可以添加 flex 属性
+        }
+
+        // 计算间距的总高度
+        let spacing_height = self.spacing * (self.children.len() - 1) as f32;
+        
+        // 计算剩余空间
+        let available_height = height - spacing_height;
+        let unit_height = if total_flex > 0.0 {
+            (available_height - total_height) / total_flex
+        } else {
+            0.0
+        };
+
+        // 布局每个子组件
+        let mut current_y = y;
         for child in &mut self.children {
-            // TODO: 实现具体的垂直布局逻辑
-            current_y += self.spacing;
+            let (child_preferred_width, child_preferred_height) = child.preferred_size();
+            
+            // 根据对齐方式计算 x 坐标
+            let child_x = match self.alignment {
+                Alignment::Start => x,
+                Alignment::Center => x + (width - child_preferred_width) / 2.0,
+                Alignment::End => x + width - child_preferred_width,
+            };
+
+            // 设置子组件的位置和大小
+            child.set_rect(Rect {
+                x: child_x,
+                y: current_y,
+                width: child_preferred_width,
+                height: child_preferred_height + unit_height,
+            });
+
+            current_y += child_preferred_height + unit_height + self.spacing;
         }
     }
 
     fn layout_horizontal(&mut self, x: f32, y: f32, width: f32, height: f32) {
-        let mut current_x = x;
+        if self.children.is_empty() {
+            return;
+        }
+
+        // 计算所有子组件的总宽度和固定宽度
+        let mut total_width = 0.0;
+        let mut total_flex = 0.0;
         
+        for child in &self.children {
+            let (child_width, _) = child.preferred_size();
+            total_width += child_width;
+            total_flex += 1.0; // 未来可以添加 flex 属性
+        }
+
+        // 计算间距的总宽度
+        let spacing_width = self.spacing * (self.children.len() - 1) as f32;
+        
+        // 计算剩余空间
+        let available_width = width - spacing_width;
+        let unit_width = if total_flex > 0.0 {
+            (available_width - total_width) / total_flex
+        } else {
+            0.0
+        };
+
+        // 布局每个子组件
+        let mut current_x = x;
         for child in &mut self.children {
-            // TODO: 实现具体的水平布局逻辑
-            current_x += self.spacing;
+            let (child_preferred_width, child_preferred_height) = child.preferred_size();
+            
+            // 根据对齐方式计算 y 坐标
+            let child_y = match self.alignment {
+                Alignment::Start => y,
+                Alignment::Center => y + (height - child_preferred_height) / 2.0,
+                Alignment::End => y + height - child_preferred_height,
+            };
+
+            // 设置子组件的位置和大小
+            child.set_rect(Rect {
+                x: current_x,
+                y: child_y,
+                width: child_preferred_width + unit_width,
+                height: child_preferred_height,
+            });
+
+            current_x += child_preferred_width + unit_width + self.spacing;
         }
     }
 }

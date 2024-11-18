@@ -22,14 +22,20 @@ impl Window {
     }
 
     pub fn run(self) {
+        let window = self.window; // 保持 window 活跃
         self.event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Wait;
 
             match event {
                 Event::WindowEvent {
-                    event: WindowEvent::CloseRequested,
-                    ..
-                } => *control_flow = ControlFlow::Exit,
+                    window_id,
+                    event,
+                } if window_id == window.id() => {
+                    match event {
+                        WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
+                        _ => (),
+                    }
+                }
                 _ => (),
             }
         });

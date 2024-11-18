@@ -1,3 +1,6 @@
+mod window;
+pub use window::Window;
+
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
 }

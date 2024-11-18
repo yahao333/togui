@@ -1,0 +1,19 @@
+Container {
+    direction: vertical
+    alignment: center
+    padding: 20
+
+    Text "Welcome to ToGUI"
+
+    Container {
+        direction: horizontal
+        alignment: center
+        spacing: 10
+
+        Button "Button 1"
+        Button "Button 2"
+        Button "Button 3"
+    }
+
+    Text "This is a demo of the UI file system"
+}

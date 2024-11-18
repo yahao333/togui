@@ -47,10 +47,16 @@ impl Widget for Button {
             WindowEvent::CursorMoved { position, .. } => {
                 let x = position.x;
                 let y = position.y;
-                self.is_hovered = x >= self.x 
-                    && x <= self.x + self.width 
-                    && y >= self.y 
-                    && y <= self.y + self.height;
+
+                let self_x = self.x.into();
+                let self_y = self.y.into();
+                let self_width = self.width.into();
+                let self_height = self.height.into();
+
+                self.is_hovered = x >= self_x 
+                    && x <= self_x + self_width 
+                    && y >= self_y 
+                    && y <= self_y + self_height;
             }
             _ => {}
         }

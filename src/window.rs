@@ -41,6 +41,7 @@ impl Window {
         let window_id = self.window.id();
         let mut renderer = self.renderer;
         let window = self.window;
+        let mut widgets = self.widgets;
 
         self.event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Poll;
@@ -54,7 +55,7 @@ impl Window {
                         WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                         _ => {
                             // 处理组件事件
-                            for widget in &mut self.widgets {
+                            for widget in &mut widgets {
                                 widget.handle_event(event);
                             }
                         }
@@ -64,7 +65,7 @@ impl Window {
                     self.renderer.clear([64, 64, 64, 255]);
                     
                     // 绘制所有组件
-                    for widget in &self.widgets {
+                    for widget in &widgets {
                         widget.draw(&mut self.renderer);
                     }
                     

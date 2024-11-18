@@ -31,6 +31,9 @@ impl Window {
 
     pub fn run(self) {
         let window_id = self.window.id();
+        let mut renderer = self.renderer;
+        let window = self.window;
+
         self.event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Poll;
 
@@ -45,11 +48,11 @@ impl Window {
                     }
                 }
                 Event::RedrawRequested(_) => {
-                    self.renderer.clear([64, 64, 64, 255]);
-                    self.renderer.render().unwrap();
+                    renderer.clear([64, 64, 64, 255]);
+                    renderer.render().unwrap();
                 }
                 Event::MainEventsCleared => {
-                    self.window.request_redraw();
+                    window.request_redraw();
                 }
                 _ => (),
             }

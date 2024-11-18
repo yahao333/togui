@@ -45,18 +45,13 @@ impl Widget for Button {
     fn handle_event(&mut self, event: &WindowEvent) {
         match event {
             WindowEvent::CursorMoved { position, .. } => {
-                let x = position.x;
-                let y = position.y;
-
-                let self_x = self.x.into();
-                let self_y = self.y.into();
-                let self_width = self.width.into();
-                let self_height = self.height.into();
-
-                self.is_hovered = x >= self_x 
-                    && x <= self_x + self_width 
-                    && y >= self_y 
-                    && y <= self_y + self_height;
+                let x = position.x as f32;
+                let y = position.y as f32;
+                
+                self.is_hovered = x >= self.x 
+                    && x <= self.x + self.width
+                    && y >= self.y 
+                    && y <= self.y + self.height;
             }
             _ => {}
         }

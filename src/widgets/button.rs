@@ -1,3 +1,4 @@
+use std::sync::Arc;
 use winit::event::WindowEvent;
 use super::Widget;
 use crate::renderer::Renderer;
@@ -10,6 +11,8 @@ pub struct Button {
     height: f32,
     label: String,
     is_hovered: bool,
+    is_pressed: bool,
+    on_click: Option<Arc<dyn Fn() + Send + Sync>>,
 }
 
 impl Button {
@@ -21,17 +24,28 @@ impl Button {
             height,
             label: label.to_string(),
             is_hovered: false,
+            is_pressed: false,
+            on_click: None,
         }
     }
+    pub fn on_click<F>(mut self, callback: F) -> Self 
+    where
+        F: Fn() + Send + Sync + 'static,
+    {
+        self.on_click = Some(Arc::new(callback));
+        self
+    }    
 }
 
 impl Widget for Button {
     fn draw(&self, renderer: &mut Renderer) {
         // 绘制按钮背景
-        let color = if self.is_hovered {
-            [100, 100, 100, 255]
+        let color = if self.is_pressed {
+            [60, 60, 60, 255]  // 按下状态
+        } else if self.is_hovered {
+            [100, 100, 100, 255]  // 悬停状态
         } else {
-            [80, 80, 80, 255]
+            [80, 80, 80, 255]  // 普通状态
         };
         
         renderer.draw_rect(
@@ -68,6 +82,27 @@ impl Widget for Button {
                     && x <= self.x + self.width
                     && y >= self.y 
                     && y <= self.y + self.height;
+            }
+            WindowEvent::MouseInput { 
+                state: winit::event::ElementState::Pressed,
+                button: winit::event::MouseButton::Left,
+                ..
+            } => {
+                if self.is_hovered {
+                    self.is_pressed = true;
+                }
+            }
+            WindowEvent::MouseInput { 
+                state: winit::event::ElementState::Released,
+                button: winit::event::MouseButton::Left,
+                ..
+            } => {
+                if self.is_pressed && self.is_hovered {
+                    if let Some(callback) = &self.on_click {
+                        callback();
+                    }
+                }
+                self.is_pressed = false;
             }
             _ => {}
         }

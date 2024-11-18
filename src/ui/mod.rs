@@ -1,8 +1,9 @@
-mod parser;
+pub mod parser;
+
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, watcher};
+use notify::{Watcher, RecursiveMode, recommended_watcher};
 use std::sync::mpsc::channel;
 use std::time::Duration;
 pub use parser::parse_ui;

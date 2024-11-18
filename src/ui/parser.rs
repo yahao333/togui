@@ -1,4 +1,4 @@
-use crate::widgets::{Container, Button, Text};
+use crate::{Container, Button, Text};
 use crate::layout::{Direction, Alignment, Padding};
 
 pub fn parse_ui(content: &str) -> Container {

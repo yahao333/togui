@@ -4,7 +4,8 @@ use togui::ui::{UiLoader, parse_ui};
 fn main() {
     let mut window = Window::new("ToGUI UI Demo", 800, 600);
     let mut loader = UiLoader::new();
-
+    // 设置事件代理
+    loader.set_event_proxy(window.get_event_proxy());
     // 加载UI文件
     let content = loader.load("examples/demo.ui").unwrap();
     let container = parse_ui(&content);

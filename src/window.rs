@@ -3,15 +3,21 @@ use crate::widgets::Widget;
 use std::vec::Vec;
 use winit::{
     event::{Event, WindowEvent},
-    event_loop::{ControlFlow, EventLoop},
+    event_loop::{ControlFlow, EventLoop, EventLoopProxy},
     window::WindowBuilder,
 };
 
 pub struct Window {
-    event_loop: EventLoop<()>,
+    event_loop: EventLoop<CustomEvent>,
     window: winit::window::Window,
     renderer: Renderer,
     widgets: Vec<Box<dyn Widget>>,
+    event_proxy: EventLoopProxy<CustomEvent>,
+}
+
+#[derive(Debug)]
+pub enum CustomEvent {
+    Reload(Container),
 }
 
 impl Window {
@@ -25,12 +31,22 @@ impl Window {
         
         let renderer = Renderer::new(&window);
 
-        Self { 
-            event_loop, 
+        Self {
+            event_loop,
             window,
             renderer,
             widgets: Vec::new(),
+            event_proxy: event_loop.create_proxy(),
         }
+    }
+
+    pub fn get_event_proxy(&self) -> EventLoopProxy<CustomEvent> {
+        self.event_proxy.clone()
+    }
+
+    pub fn reload_ui(&mut self, container: Container) {
+        self.widgets.clear();
+        self.add_widget(container);
     }
 
     pub fn add_widget<W: Widget + 'static>(&mut self, widget: W) {
@@ -61,6 +77,11 @@ impl Window {
                         }
                     }
                 }
+                Event::UserEvent(CustomEvent::Reload(container)) => {
+                    widgets.clear();
+                    widgets.push(Box::new(container));
+                    self.window.request_redraw();
+                }                
                 Event::RedrawRequested(_) => {
                     renderer.clear([64, 64, 64, 255]);
                     

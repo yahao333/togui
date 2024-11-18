@@ -37,7 +37,7 @@ impl Window {
         self.widgets.push(Box::new(widget));
     }
 
-    pub fn run(self) {
+    pub fn run(mut self) {
         let window_id = self.window.id();
         let mut renderer = self.renderer;
         let window = self.window;

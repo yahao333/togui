@@ -2,5 +2,14 @@
 name = "togui"
 version = "0.1.0"
 edition = "2021"
+authors = ["yanghao <fexeak@outlook.com>"]
+description = "A lightweight and scalable GUI framework"
+license = "MIT"
 
 [dependencies]
+winit = "0.28"  # 窗口管理
+pixels = "0.13.0"  # 像素级渲染
+glam = "0.24.1"  # 数学运算库
+
+[dev-dependencies]
+env_logger = "0.10"

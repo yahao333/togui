@@ -62,17 +62,17 @@ impl Window {
                     }
                 }
                 Event::RedrawRequested(_) => {
-                    self.renderer.clear([64, 64, 64, 255]);
+                    renderer.clear([64, 64, 64, 255]);
                     
                     // 绘制所有组件
                     for widget in &widgets {
-                        widget.draw(&mut self.renderer);
+                        widget.draw(&mut renderer);
                     }
                     
-                    self.renderer.render().unwrap();
+                    renderer.render().unwrap();
                 }
                 Event::MainEventsCleared => {
-                    self.window.request_redraw();
+                    window.request_redraw();
                 }
                 _ => (),
             }

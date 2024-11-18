@@ -6,7 +6,6 @@ use notify::{Watcher, RecursiveMode, watcher};
 use std::sync::mpsc::channel;
 use std::time::Duration;
 pub use parser::parse_ui;
-pub use self::UiLoader;
 
 pub struct UiLoader {
     watch_paths: Vec<PathBuf>,

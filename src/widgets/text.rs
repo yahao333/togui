@@ -1,4 +1,6 @@
+use winit::event::WindowEvent;
 use super::Widget;
+use crate::renderer::Renderer;
 
 pub struct Text {
     x: f32,

@@ -49,6 +49,12 @@ impl Container {
         self.layout();
     }
 
+    // 同样的功能 add_child但是名称使用 add_widget
+    pub fn add_widget<W: Widget + 'static>(&mut self, widget: W) {
+        self.children.push(Box::new(widget));
+        self.layout();
+    }
+
     fn layout(&mut self) {
         let content_x = self.rect.x + self.padding.left;
         let content_y = self.rect.y + self.padding.top;

@@ -13,3 +13,11 @@ glam = "0.24.1"  # 数学运算库
 
 [dev-dependencies]
 env_logger = "0.10"
+
+[dependencies.winit]
+version = "0.28"
+features = ["x11"]
+
+[dependencies.pixels]
+version = "0.13.0"
+default-features = true

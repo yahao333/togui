@@ -1,6 +1,7 @@
 use winit::event::WindowEvent;
 use super::Widget;
 use crate::renderer::Renderer;
+use crate::font::Font;
 
 pub struct Button {
     x: f32,
@@ -40,6 +41,21 @@ impl Widget for Button {
             self.height as u32,
             color,
         );
+
+        // 绘制按钮文本
+        let font = Font::default();
+        let text_x = self.x as i32 + (self.width as i32 - (self.label.len() * 8) as i32) / 2;
+        let text_y = self.y as i32 + (self.height as i32 - 8) / 2;
+
+        for (i, c) in self.label.chars().enumerate() {
+            font.render_char(
+                renderer,
+                text_x + (i * 8) as i32,
+                text_y,
+                c,
+                [255, 255, 255, 255]
+            );
+        }        
     }
 
     fn handle_event(&mut self, event: &WindowEvent) {

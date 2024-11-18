@@ -50,6 +50,14 @@ impl Renderer {
         }
     }
     
+    pub fn draw_pixel(&mut self, x: i32, y: i32, color: [u8; 4]) {
+        if x >= 0 && x < self.width as i32 && y >= 0 && y < self.height as i32 {
+            let idx = (y * self.width as i32 + x) as usize * 4;
+            let frame = self.pixels.frame_mut();
+            frame[idx..idx + 4].copy_from_slice(&color);
+        }
+    }
+
     pub fn render(&mut self) -> Result<(), pixels::Error> {
         self.pixels.render()
     }

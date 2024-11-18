@@ -1,4 +1,6 @@
 use crate::renderer::Renderer;
+use crate::widgets::Widget;
+use std::vec::Vec;
 use winit::{
     event::{Event, WindowEvent},
     event_loop::{ControlFlow, EventLoop},
@@ -9,6 +11,7 @@ pub struct Window {
     event_loop: EventLoop<()>,
     window: winit::window::Window,
     renderer: Renderer,
+    widgets: Vec<Box<dyn Widget>>,
 }
 
 impl Window {
@@ -29,6 +32,10 @@ impl Window {
         }
     }
 
+    pub fn add_widget<W: Widget + 'static>(&mut self, widget: W) {
+        self.widgets.push(Box::new(widget));
+    }
+
     pub fn run(self) {
         let window_id = self.window.id();
         let mut renderer = self.renderer;
@@ -40,19 +47,30 @@ impl Window {
             match event {
                 Event::WindowEvent {
                     window_id: event_window_id,
-                    event,
+                    ref event,
                 } if event_window_id == window_id => {
                     match event {
                         WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                        _ => (),
+                        _ => {
+                            // 处理组件事件
+                            for widget in &mut self.widgets {
+                                widget.handle_event(event);
+                            }
+                        }
                     }
                 }
                 Event::RedrawRequested(_) => {
-                    renderer.clear([64, 64, 64, 255]);
-                    renderer.render().unwrap();
+                    self.renderer.clear([64, 64, 64, 255]);
+                    
+                    // 绘制所有组件
+                    for widget in &self.widgets {
+                        widget.draw(&mut self.renderer);
+                    }
+                    
+                    self.renderer.render().unwrap();
                 }
                 Event::MainEventsCleared => {
-                    window.request_redraw();
+                    self.window.request_redraw();
                 }
                 _ => (),
             }

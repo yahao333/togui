@@ -29,6 +29,7 @@ impl Window {
             event_loop, 
             window,
             renderer,
+            widgets: Vec::new(),
         }
     }
 

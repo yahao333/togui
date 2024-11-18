@@ -1,0 +1,6 @@
+image: rust:latest
+
+tasks:
+  - name: Build and run
+    init: cargo build
+    command: cargo run

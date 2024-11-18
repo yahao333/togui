@@ -107,4 +107,23 @@ impl Widget for Button {
             _ => {}
         }
     }
+    fn get_rect(&self) -> Rect {
+        Rect {
+            x: self.x,
+            y: self.y,
+            width: self.width,
+            height: self.height,
+        }
+    }
+
+    fn set_rect(&mut self, rect: Rect) {
+        self.x = rect.x;
+        self.y = rect.y;
+        self.width = rect.width;
+        self.height = rect.height;
+    }
+
+    fn preferred_size(&self) -> (f32, f32) {
+        (200.0, 50.0)  // 按钮的默认大小
+    }    
 }

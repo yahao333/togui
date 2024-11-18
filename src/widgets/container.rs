@@ -186,8 +186,8 @@ impl Widget for Container {
     fn preferred_size(&self) -> (f32, f32) {
         match self.direction {
             Direction::Horizontal => {
-                let mut width = 0.0;
-                let mut max_height = 0.0;
+                let mut width: f32 = 0.0;
+                let mut max_height: f32 = 0.0;
                 for child in &self.children {
                     let (child_width, child_height) = child.preferred_size();
                     width += child_width;
@@ -196,8 +196,8 @@ impl Widget for Container {
                 (width, max_height)
             }
             Direction::Vertical => {
-                let mut max_width = 0.0;
-                let mut height = 0.0;
+                let mut max_width: f32 = 0.0;
+                let mut height: f32 = 0.0;
                 for child in &self.children {
                     let (child_width, child_height) = child.preferred_size();
                     max_width = max_width.max(child_width);

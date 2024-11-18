@@ -53,8 +53,8 @@ impl Widget for Button {
 
         // 绘制按钮文本
         let font = Font::default();
-        let text_x = self.x as i32 + (self.width as i32 - (self.label.len() * 8) as i32) / 2;
-        let text_y = self.y as i32 + (self.height as i32 - 8) / 2;
+        let text_x = self.rect.x as i32 + (self.rect.width as i32 - (self.label.len() * 8) as i32) / 2;
+        let text_y = self.rect.y as i32 + (self.rect.height as i32 - 8) / 2;
 
         for (i, c) in self.label.chars().enumerate() {
             font.render_char(
@@ -73,10 +73,10 @@ impl Widget for Button {
                 let x = position.x as f32;
                 let y = position.y as f32;
                 
-                self.is_hovered = x >= self.x 
-                    && x <= self.x + self.width
-                    && y >= self.y 
-                    && y <= self.y + self.height;
+                self.is_hovered = x >= self.rect.x 
+                    && x <= self.rect.x + self.rect.width
+                    && y >= self.rect.y 
+                    && y <= self.rect.y + self.rect.height;
             }
             WindowEvent::MouseInput { 
                 state: winit::event::ElementState::Pressed,

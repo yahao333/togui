@@ -30,15 +30,15 @@ impl Window {
     }
 
     pub fn run(self) {
-        let window = self.window; // 保持 window 活跃
+        let window_id = self.window.id();
         self.event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Poll;
 
             match event {
                 Event::WindowEvent {
-                    window_id,
+                    window_id: event_window_id,
                     event,
-                } if window_id == self.window.id() => {
+                } if event_window_id == window_id => {
                     match event {
                         WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
                         _ => (),

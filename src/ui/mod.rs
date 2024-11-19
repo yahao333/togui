@@ -3,7 +3,7 @@ pub mod parser;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, recommended_watcher};
+use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult};
 use std::sync::mpsc::channel;
 use std::time::Duration;
 use winit::{
@@ -71,6 +71,7 @@ impl UiLoader {
         }
 
         let event_proxy = self.event_proxy.clone();
+        let path = self.watch_paths[0].clone();
         
         std::thread::spawn(move || {
             loop {

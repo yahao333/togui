@@ -108,49 +108,48 @@ impl UiLoader {
         let path = self.watch_paths[0].clone();
         
         std::thread::spawn(move || {
-        //     let mut last_reload = std::time::Instant::now();
+            let mut last_reload = std::time::Instant::now();
 
-        //     loop {
-        //         if let Ok(event) = rx.recv() {
-        //             debug_log!("Received file system event: {:?}", event);
-        //             if let Ok(notify::Event { kind: notify::EventKind::Modify(_), .. }) = event {
-        //                 let now = std::time::Instant::now();
-        //                 let duration = now.duration_since(last_reload).as_millis();
-        //                 debug_log!("Time since last reload: {}ms", duration);                        
-        //                 // 确保两次重载之间至少间隔 100ms
-        //                 if duration > 200 {
-        //                     debug_log!("Attempting to reload file");
-        //                     if let Some(proxy) = &event_proxy {
-        //                         std::thread::sleep(Duration::from_millis(100));
-        //                         match std::fs::read_to_string(&path) {
-        //                             Ok(content) => {
-        //                                 debug_log!("Successfully read file, content length: {}", content.len());
-        //                                 match proxy.send_event(CustomEvent::Reload(content)) {
-        //                                     Ok(_) => {
-        //                                         debug_log!("Successfully sent reload event");
-        //                                         last_reload = now;
-        //                                     },
-        //                                     Err(e) => debug_log!("Failed to send reload event: {:?}", e),
-        //                                 }
-        //                             }
-        //                             Err(e) => debug_log!("Failed to read UI file: {}", e),
-        //                         }
-        //                     }else {
-        //                         debug_log!("Event proxy is None");
-        //                     }
-        //                 }else {
-        //                     debug_log!("Skipping reload due to time threshold");
-        //                 }
-        //             }else {
-        //                 debug_log!("Event is not a Modify event");
-        //             }
-        //         }
-        //     }
-            loop{
+            loop {
                 for res in rx {
                     match res {
                         Ok(event) => println!("event: {:?}", event),
                         Err(e) => println!("watch error: {:?}", e),
+                    }
+                }
+
+                if let Ok(event) = rx.recv() {
+                    debug_log!("Received file system event: {:?}", event);
+                    if let Ok(notify::Event { kind: notify::EventKind::Modify(_), .. }) = event {
+                        let now = std::time::Instant::now();
+                        let duration = now.duration_since(last_reload).as_millis();
+                        debug_log!("Time since last reload: {}ms", duration);                        
+                        // 确保两次重载之间至少间隔 100ms
+                        if duration > 200 {
+                            debug_log!("Attempting to reload file");
+                            if let Some(proxy) = &event_proxy {
+                                std::thread::sleep(Duration::from_millis(100));
+                                match std::fs::read_to_string(&path) {
+                                    Ok(content) => {
+                                        debug_log!("Successfully read file, content length: {}", content.len());
+                                        match proxy.send_event(CustomEvent::Reload(content)) {
+                                            Ok(_) => {
+                                                debug_log!("Successfully sent reload event");
+                                                last_reload = now;
+                                            },
+                                            Err(e) => debug_log!("Failed to send reload event: {:?}", e),
+                                        }
+                                    }
+                                    Err(e) => debug_log!("Failed to read UI file: {}", e),
+                                }
+                            }else {
+                                debug_log!("Event proxy is None");
+                            }
+                        }else {
+                            debug_log!("Skipping reload due to time threshold");
+                        }
+                    }else {
+                        debug_log!("Event is not a Modify event");
                     }
                 }
             }

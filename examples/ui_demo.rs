@@ -1,5 +1,7 @@
 use togui::Window;
 use togui::ui::{UiLoader, parse_ui};
+use togui::debug_log;
+use togui::info_log;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     info_log!("Starting ToGUI UI Demo");

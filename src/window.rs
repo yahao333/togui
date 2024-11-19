@@ -80,7 +80,7 @@ impl Window {
                         }
                     }
                 }
-                Event::UserEvent(CustomEvent::Reload(container)) => {
+                Event::UserEvent(CustomEvent::Reload(content)) => {
                     // 解析新的UI内容
                     if let Ok(container) = parse_ui(&content) {
                         widgets.clear();

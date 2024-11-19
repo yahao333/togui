@@ -110,7 +110,7 @@ impl UiLoader {
         std::thread::spawn(move || {
             let mut last_reload = std::time::Instant::now();
 
-            loop {
+            // loop {
                 while let Ok(event) = rx.recv() {
                     debug_log!("Raw event received: {:?}", event);
                     match event {
@@ -153,7 +153,7 @@ impl UiLoader {
                 //         debug_log!("Event is not a Modify event");
                 //     }
                 // }
-            }
+            // }
         });
         // Block forever, printing out events as they come in
 

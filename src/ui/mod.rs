@@ -11,6 +11,7 @@ use winit::{
     event_loop::{ControlFlow, EventLoop, EventLoopProxy},
     window::WindowBuilder,
 };
+use crate::window::CustomEvent;
 
 pub use parser::parse_ui;
 

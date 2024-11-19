@@ -116,7 +116,7 @@ impl Window {
                         widget.draw(&mut renderer);
                     }
                     
-                    // renderer.render().unwrap();
+                    renderer.render().unwrap();
                 }
                 Event::MainEventsCleared => {
                     window.request_redraw();

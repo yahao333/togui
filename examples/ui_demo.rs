@@ -1,7 +1,7 @@
 use togui::Window;
 use togui::ui::{UiLoader, parse_ui};
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut window = Window::new("ToGUI UI Demo", 800, 600);
     let mut loader = UiLoader::new();
     // 设置事件代理
@@ -18,4 +18,5 @@ fn main() {
     });
 
     window.run();
+    Ok(())
 }

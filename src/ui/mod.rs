@@ -3,7 +3,7 @@ pub mod parser;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult};
+use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult, Event};
 use std::time::Duration;
 use winit::{
     event::{Event, WindowEvent},

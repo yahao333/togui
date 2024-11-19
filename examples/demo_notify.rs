@@ -47,8 +47,8 @@ fn handle_fs_events(rx: Receiver<Event>) {
             }
             Err(e) => {
                 match e {
-                    mpsc::RecvTimeoutError::Timeout => continue,
-                    mpsc::RecvTimeoutError::Disconnected => {
+                    RecvTimeoutError::Timeout => continue,
+                    RecvTimeoutError::Disconnected => {
                         println!("通道已断开: {:?}", e);
                         break;
                     }

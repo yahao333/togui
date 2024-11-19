@@ -109,12 +109,17 @@ impl UiLoader {
             }
         })?;
 
-        for path in &self.watch_paths {
-            debug_log!("Watching path: {:?}", path);
-            watcher.watch(path, RecursiveMode::NonRecursive)
-                .map_err(LoaderError::NotifyError)?;
-        }
-
+        // for path in &self.watch_paths {
+        //     debug_log!("Watching path: {:?}", path);
+        //     watcher.watch(path, RecursiveMode::NonRecursive)
+        //         .map_err(LoaderError::NotifyError)?;
+        // }
+        // 要监控的目录路径
+        let watch_path = Path::new(".");
+        
+        // 开始监控目录
+        watcher.watch(watch_path, RecursiveMode::Recursive)?;
+        
         // 在新线程中处理文件系统事件
         let handle = thread::spawn(move || {
             Self::handle_fs_events(rx);

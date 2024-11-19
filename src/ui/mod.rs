@@ -111,8 +111,9 @@ impl UiLoader {
             let mut last_reload = std::time::Instant::now();
 
             loop {
-                for res in &rx {
-                    match res {
+                while let Ok(event) = rx.recv() {
+                    debug_log!("Raw event received: {:?}", event);
+                    match event {
                         Ok(event) => println!("event: {:?}", event),
                         Err(e) => println!("watch error: {:?}", e),
                     }

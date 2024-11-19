@@ -45,11 +45,13 @@ fn handle_fs_events(rx: Receiver<Event>) {
                 }
             }
             Err(e) => {
-                if e.is_timeout() {
-                    continue;
+                match e {
+                    mpsc::RecvTimeoutError::Timeout => continue,
+                    mpsc::RecvTimeoutError::Disconnected => {
+                        println!("通道已断开: {:?}", e);
+                        break;
+                    }
                 }
-                println!("接收错误: {:?}", e);
-                break;
             }
         }
     }

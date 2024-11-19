@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     loader.set_event_proxy(window.get_event_proxy());
     // 加载UI文件
     debug_log!("Loading UI file");
-    let content = loader.load("examples/demo.ui").unwrap();
+    let content = loader.load("examples/assets/demo.ui").unwrap();
     let container = parse_ui(&content).expect("Failed to parse UI");
     window.add_widget(container);
 

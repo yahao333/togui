@@ -103,7 +103,7 @@ impl UiLoader {
         // }
 
         // 要监控的目录路径
-        let watch_path = Path::new(".");
+        let watch_path = Path::new("./assets");
         
         // 开始监控目录
         watcher.watch(watch_path, RecursiveMode::Recursive)?;        

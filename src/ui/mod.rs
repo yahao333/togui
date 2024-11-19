@@ -102,7 +102,7 @@ impl UiLoader {
         std::thread::spawn(move || {
             loop {
                 if let Ok(event) = rx.recv() {
-                    if let notify::Event { kind: notify::EventKind::Modify(_), .. } = event {
+                    if let Ok(notify::Event { kind: notify::EventKind::Modify(_), .. }) = event {
                         if let Some(proxy) = &event_proxy {
                             std::thread::sleep(Duration::from_millis(100));
                             match std::fs::read_to_string(&path) {

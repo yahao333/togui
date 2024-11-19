@@ -99,7 +99,7 @@ impl UiLoader {
         let (tx, rx) = channel();
 
         // 创建一个 watcher
-        let mut watcher = notify::recommended_watcher(move |result: Result<Event>| {
+        let mut watcher = notify::recommended_watcher(move |result: Result<Event, E>| {
             match result {
                 Ok(event) => tx.send(event).unwrap(),
                 Err(e) => println!("监控错误: {:?}", e),
@@ -114,7 +114,7 @@ impl UiLoader {
 
         // 在新线程中处理文件系统事件
         let handle = thread::spawn(move || {
-            handle_fs_events(rx);
+            Self::handle_fs_events(rx);
         });
 
         /*

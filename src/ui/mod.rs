@@ -110,7 +110,7 @@ impl UiLoader {
         let event_proxy = self.event_proxy.clone();
         let path = self.watch_paths[0].clone();
         
-        // std::thread::spawn(move || {
+        std::thread::spawn(move || {
         //     let mut last_reload = std::time::Instant::now();
 
         //     loop {
@@ -149,14 +149,15 @@ impl UiLoader {
         //             }
         //         }
         //     }
-        // });
-        // Block forever, printing out events as they come in
-        for res in rx {
-            match res {
-                Ok(event) => println!("event: {:?}", event),
-                Err(e) => println!("watch error: {:?}", e),
+            for res in rx {
+                match res {
+                    Ok(event) => println!("event: {:?}", event),
+                    Err(e) => println!("watch error: {:?}", e),
+                }
             }
-        }
+        });
+        // Block forever, printing out events as they come in
+
         self.watcher = Some(watcher);
         Ok(())
     }

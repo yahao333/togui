@@ -99,7 +99,7 @@ impl UiLoader {
         let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
         // Add a path to be watched. All files and directories at that path and
         // below will be monitored for changes.
-        watcher.watch(Path::new("."), RecursiveMode::Recursive)?;
+        // watcher.watch(Path::new("."), RecursiveMode::Recursive)?;
 
         for path in &self.watch_paths {
             debug_log!("Watching path: {:?}", path);

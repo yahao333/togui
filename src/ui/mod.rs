@@ -111,7 +111,7 @@ impl UiLoader {
             let mut last_reload = std::time::Instant::now();
 
             loop {
-                for res in rx {
+                for res in &rx {
                     match res {
                         Ok(event) => println!("event: {:?}", event),
                         Err(e) => println!("watch error: {:?}", e),

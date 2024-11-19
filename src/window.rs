@@ -25,6 +25,7 @@ pub struct Window {
 impl Window {
     pub fn new(title: &str, width: u32, height: u32) -> Self {
         let event_loop = EventLoop::<CustomEvent>::with_user_event();
+        let event_proxy = event_loop.create_proxy();
 
         let window = WindowBuilder::new()
             .with_title(title)
@@ -39,7 +40,7 @@ impl Window {
             window,
             renderer,
             widgets: Vec::new(),
-            event_proxy: event_loop.create_proxy(),
+            event_proxy,
         }
     }
 

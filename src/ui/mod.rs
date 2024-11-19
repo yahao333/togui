@@ -4,7 +4,6 @@ use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
 use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult};
-use std::sync::mpsc::channel;
 use std::time::Duration;
 use winit::{
     event::{Event, WindowEvent},
@@ -18,6 +17,7 @@ use crate::debug_log;
 use std::sync::mpsc;
 use std::thread;
 use std::sync::mpsc::{channel, Receiver};
+use std::sync::mpsc::RecvTimeoutError;
 
 pub use parser::parse_ui;
 
@@ -171,10 +171,23 @@ impl UiLoader {
 
     fn handle_fs_events(rx: Receiver<Event>) {
         loop {
-            for res in rx {
-                match res {
-                    Ok(event) => println!("event: {:?}", event),
-                    Err(e) => println!("watch error: {:?}", e),
+            match rx.recv_timeout(Duration::from_secs(1)) {
+                Ok(event) => {
+                    match event.kind {
+                        notify::EventKind::Create(_) => println!("创建: {:?}", event.paths),
+                        notify::EventKind::Modify(_) => println!("修改: {:?}", event.paths),
+                        notify::EventKind::Remove(_) => println!("删除: {:?}", event.paths),
+                        _ => println!("其他事件: {:?}", event),
+                    }
+                }
+                Err(e) => {
+                    match e {
+                        RecvTimeoutError::Timeout => continue,
+                        RecvTimeoutError::Disconnected => {
+                            println!("通道已断开: {:?}", e);
+                            break;
+                        }
+                    }
                 }
             }
         }

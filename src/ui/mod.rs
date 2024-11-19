@@ -95,75 +95,85 @@ impl UiLoader {
 
     pub fn start_watching(&mut self) -> Result<(), LoaderError> {
         debug_log!("Starting UI file watcher");
-        let (tx, rx) = mpsc::channel();
-        let event_proxy = self.event_proxy.clone();
-        let path = self.watch_paths[0].clone();
-    
-        // 创建 watcher 并设置回调
-        let mut watcher = notify::recommended_watcher(move |result: notify::Result<notify::Event>| {
+        // 创建通道用于线程间通信
+        let (tx, rx) = channel();
+
+        // 创建一个 watcher
+        let mut watcher = notify::recommended_watcher(move |result: Result<Event>| {
             match result {
-                Ok(event) => {
-                    if let Err(e) = tx.send(event) {
-                        debug_log!("Failed to send event: {:?}", e);
-                    }
-                },
-                Err(e) => debug_log!("Watch error: {:?}", e),
+                Ok(event) => tx.send(event).unwrap(),
+                Err(e) => println!("监控错误: {:?}", e),
             }
-        }).map_err(LoaderError::NotifyError)?;
-    
-        // 设置监视路径
-        for watch_path in &self.watch_paths {
-            debug_log!("Watching path: {:?}", watch_path);
-            watcher.watch(watch_path, RecursiveMode::NonRecursive)
+        })?;
+
+        for path in &self.watch_paths {
+            debug_log!("Watching path: {:?}", path);
+            watcher.watch(path, RecursiveMode::NonRecursive)
                 .map_err(LoaderError::NotifyError)?;
         }
-    
+
         // 在新线程中处理文件系统事件
+        let handle = thread::spawn(move || {
+            handle_fs_events(rx);
+        });
+
+        /*
+        let event_proxy = self.event_proxy.clone();
+        let path = self.watch_paths[0].clone();
+        
         std::thread::spawn(move || {
             let mut last_reload = std::time::Instant::now();
-    
+
             loop {
-                match rx.recv_timeout(Duration::from_secs(1)) {
-                    Ok(event) => {
-                        debug_log!("Received event: {:?}", event);
-                        if matches!(event.kind, notify::EventKind::Modify(_)) {
-                            let now = std::time::Instant::now();
-                            let duration = now.duration_since(last_reload).as_millis();
-                            
-                            if duration > 200 {
-                                if let Some(proxy) = &event_proxy {
-                                    match std::fs::read_to_string(&path) {
-                                        Ok(content) => {
-                                            debug_log!("File content read, length: {}", content.len());
-                                            if let Err(e) = proxy.send_event(CustomEvent::Reload(content)) {
-                                                debug_log!("Failed to send reload event: {:?}", e);
-                                            } else {
+                if let Ok(event) = rx.recv() {
+                    debug_log!("Received file system event: {:?}", event);
+                    if let Ok(notify::Event { kind: notify::EventKind::Modify(_), .. }) = event {
+                        let now = std::time::Instant::now();
+                        let duration = now.duration_since(last_reload).as_millis();
+                        debug_log!("Time since last reload: {}ms", duration);                        
+                        // 确保两次重载之间至少间隔 100ms
+                        if duration > 200 {
+                            debug_log!("Attempting to reload file");
+                            if let Some(proxy) = &event_proxy {
+                                std::thread::sleep(Duration::from_millis(100));
+                                match std::fs::read_to_string(&path) {
+                                    Ok(content) => {
+                                        debug_log!("Successfully read file, content length: {}", content.len());
+                                        match proxy.send_event(CustomEvent::Reload(content)) {
+                                            Ok(_) => {
+                                                debug_log!("Successfully sent reload event");
                                                 last_reload = now;
-                                                debug_log!("Reload event sent successfully");
-                                            }
+                                            },
+                                            Err(e) => debug_log!("Failed to send reload event: {:?}", e),
                                         }
-                                        Err(e) => debug_log!("Failed to read file: {:?}", e),
                                     }
+                                    Err(e) => debug_log!("Failed to read UI file: {}", e),
                                 }
-                            } else {
-                                debug_log!("Skipping reload due to debounce");
+                            }else {
+                                debug_log!("Event proxy is None");
                             }
+                        }else {
+                            debug_log!("Skipping reload due to time threshold");
                         }
-                    }
-                    Err(e) => {
-                        match e {
-                            mpsc::RecvTimeoutError::Timeout => continue,
-                            mpsc::RecvTimeoutError::Disconnected => {
-                                debug_log!("Channel disconnected");
-                                break;
-                            }
-                        }
+                    }else {
+                        debug_log!("Event is not a Modify event");
                     }
                 }
             }
         });
-    
+ */
         self.watcher = Some(watcher);
         Ok(())
+    }
+
+    fn handle_fs_events(rx: Receiver<Event>) {
+        loop {
+            for res in rx {
+                match res {
+                    Ok(event) => println!("event: {:?}", event),
+                    Err(e) => println!("watch error: {:?}", e),
+                }
+            }
+        }
     }
 }

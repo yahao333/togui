@@ -8,17 +8,17 @@ use winit::{
     window::WindowBuilder,
 };
 
+#[derive(Debug)]
+pub enum CustomEvent {
+    Reload(Container),
+}
+
 pub struct Window {
     event_loop: EventLoop<CustomEvent>,
     window: winit::window::Window,
     renderer: Renderer,
     widgets: Vec<Box<dyn Widget>>,
     event_proxy: EventLoopProxy<CustomEvent>,
-}
-
-#[derive(Debug)]
-pub enum CustomEvent {
-    Reload(Container),
 }
 
 impl Window {

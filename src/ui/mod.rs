@@ -97,9 +97,6 @@ impl UiLoader {
         debug_log!("Starting UI file watcher");
         let (tx, rx) = mpsc::channel();
         let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
-        // Add a path to be watched. All files and directories at that path and
-        // below will be monitored for changes.
-        // watcher.watch(Path::new("."), RecursiveMode::Recursive)?;
 
         for path in &self.watch_paths {
             debug_log!("Watching path: {:?}", path);
@@ -149,10 +146,12 @@ impl UiLoader {
         //             }
         //         }
         //     }
-            for res in rx {
-                match res {
-                    Ok(event) => println!("event: {:?}", event),
-                    Err(e) => println!("watch error: {:?}", e),
+            loop{
+                for res in rx {
+                    match res {
+                        Ok(event) => println!("event: {:?}", event),
+                        Err(e) => println!("watch error: {:?}", e),
+                    }
                 }
             }
         });

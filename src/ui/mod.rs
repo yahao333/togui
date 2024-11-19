@@ -101,25 +101,18 @@ impl UiLoader {
         
         std::thread::spawn(move || {
             loop {
-                match rx.recv() {
-                    Ok(event) => {
-                        match event {
-                            notify::Event { kind: notify::EventKind::Modify(_), .. } => {
-                                println!("File changed, reloading...");
-                                if let Some(proxy) = &event_proxy {
-                                    // 等待文件写入完成
-                                    std::thread::sleep(Duration::from_millis(100));
-                                    let content = std::fs::read_to_string(path)
-                                        .expect("Failed to read UI file");
-                                    let container = parse_ui(&content);
-                                    proxy.send_event(CustomEvent::Reload(container))
-                                        .expect("Failed to send reload event");
+                if let Ok(event) = rx.recv() {
+                    if let notify::Event { kind: notify::EventKind::Modify(_), .. } = event {
+                        if let Some(proxy) = &event_proxy {
+                            std::thread::sleep(Duration::from_millis(100));
+                            match std::fs::read_to_string(&path) {
+                                Ok(content) => {
+                                    let _ = proxy.send_event(CustomEvent::Reload(content));
                                 }
+                                Err(e) => println!("Failed to read UI file: {}", e),
                             }
-                            _ => {}
                         }
                     }
-                    Err(e) => println!("Watch error: {:?}", e),
                 }
             }
         });

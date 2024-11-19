@@ -98,7 +98,7 @@ impl UiLoader {
 
         // 使用更细粒度的配置
         let mut config = notify::Config::default();
-        config.poll_interval(Duration::from_millis(100));
+        config.poll_interval();
 
         for path in &self.watch_paths {
             debug_log!("Watching path: {:?}", path);

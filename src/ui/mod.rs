@@ -3,7 +3,8 @@ pub mod parser;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult, Event as NotifyEvent};
+use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult};
+use std::sync::mpsc::channel;
 use std::time::Duration;
 use winit::{
     event::{Event, WindowEvent},
@@ -14,13 +15,7 @@ use crate::window::CustomEvent;
 use std::string::ParseError;
 use crate::debug_log;
 
-use std::sync::mpsc;
-use std::thread;
-use std::sync::mpsc::{channel, Receiver};
-use std::sync::mpsc::RecvTimeoutError;
-
 pub use parser::parse_ui;
-
 
 #[derive(Debug)]
 pub enum LoaderError {
@@ -98,32 +93,14 @@ impl UiLoader {
 
     pub fn start_watching(&mut self) -> Result<(), LoaderError> {
         debug_log!("Starting UI file watcher");
-        // 创建通道用于线程间通信
         let (tx, rx) = channel();
+        let mut watcher = recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
-        // 创建一个 watcher
-        let mut watcher = notify::recommended_watcher(move |result: notify::Result<notify::Event>| {
-            match result {
-                Ok(event) => tx.send(event).unwrap(),
-                Err(e) => println!("监控错误: {:?}", e),
-            }
-        })?;
-
-        // for path in &self.watch_paths {
-        //     debug_log!("Watching path: {:?}", path);
-        //     watcher.watch(path, RecursiveMode::NonRecursive)
-        //         .map_err(LoaderError::NotifyError)?;
-        // }
-        // 要监控的目录路径
-        let watch_path = Path::new(".");
-        
-        // 开始监控目录
-        watcher.watch(watch_path, RecursiveMode::Recursive)?;
-        
-        // 在新线程中处理文件系统事件
-        // let handle = thread::spawn(move || {
-        //     Self::handle_fs_events(rx);
-        // });
+        for path in &self.watch_paths {
+            debug_log!("Watching path: {:?}", path);
+            watcher.watch(path, RecursiveMode::Recursive)
+                .map_err(LoaderError::NotifyError)?;
+        }
 
         let event_proxy = self.event_proxy.clone();
         let path = self.watch_paths[0].clone();
@@ -168,32 +145,8 @@ impl UiLoader {
                 }
             }
         });
- 
+
         self.watcher = Some(watcher);
         Ok(())
-    }
-
-    fn handle_fs_events(rx: Receiver<NotifyEvent>) {
-        loop {
-            match rx.recv_timeout(Duration::from_secs(1)) {
-                Ok(event) => {
-                    match event.kind {
-                        notify::EventKind::Create(_) => println!("创建: {:?}", event.paths),
-                        notify::EventKind::Modify(_) => println!("修改: {:?}", event.paths),
-                        notify::EventKind::Remove(_) => println!("删除: {:?}", event.paths),
-                        _ => println!("其他事件: {:?}", event),
-                    }
-                }
-                Err(e) => {
-                    match e {
-                        RecvTimeoutError::Timeout => continue,
-                        RecvTimeoutError::Disconnected => {
-                            println!("通道已断开: {:?}", e);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
     }
 }

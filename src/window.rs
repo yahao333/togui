@@ -82,6 +82,7 @@ impl Window {
                     }
                 }
                 Event::UserEvent(CustomEvent::Reload(content)) => {
+                    debug_log!("Reloading UI with content length: {}", content.len());
                     // 解析新的UI内容
                     match parse_ui(&content) {
                         Ok(container) => {

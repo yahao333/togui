@@ -56,14 +56,24 @@ impl Container {
     }
 
     fn layout(&mut self) {
+        debug_log!("Layout container: {:?}", self.rect);
         let content_x = self.rect.x + self.padding.left;
         let content_y = self.rect.y + self.padding.top;
         let content_width = self.rect.width - (self.padding.left + self.padding.right);
         let content_height = self.rect.height - (self.padding.top + self.padding.bottom);
 
+        debug_log!("Content area: x={}, y={}, width={}, height={}", 
+            content_x, content_y, content_width, content_height);
+
         match self.direction {
-            Direction::Vertical => self.layout_vertical(content_x, content_y, content_width, content_height),
-            Direction::Horizontal => self.layout_horizontal(content_x, content_y, content_width, content_height),
+            Direction::Vertical => {
+                debug_log!("Using vertical layout");
+                self.layout_vertical(content_x, content_y, content_width, content_height)
+            },
+            Direction::Horizontal => {
+                debug_log!("Using horizontal layout");
+                self.layout_horizontal(content_x, content_y, content_width, content_height)
+            },
         }
     }
 

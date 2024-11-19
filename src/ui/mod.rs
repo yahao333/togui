@@ -63,6 +63,8 @@ impl UiLoader {
 
     pub fn load<P: AsRef<Path>>(&mut self, path: P) -> io::Result<String> {
         let path = path.as_ref().to_path_buf();
+        debug_log!("Loading UI file: {:?}", path);
+
         self.current_path = Some(path.clone());
 
         let mut file = File::open(&path)?;
@@ -70,6 +72,7 @@ impl UiLoader {
         file.read_to_string(&mut content)?;
         
         // 添加到监视列表
+        debug_log!("UI file content length: {} bytes", content.len());
         self.watch_paths.push(path);
         
         Ok(content)
@@ -88,10 +91,12 @@ impl UiLoader {
     }
 
     pub fn start_watching(&mut self) -> Result<(), LoaderError> {
+        debug_log!("Starting UI file watcher");
         let (tx, rx) = channel();
         let mut watcher = recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
         for path in &self.watch_paths {
+            debug_log!("Watching path: {:?}", path);
             watcher.watch(path, RecursiveMode::NonRecursive)
                 .map_err(LoaderError::NotifyError)?;
         }

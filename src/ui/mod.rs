@@ -118,8 +118,8 @@ impl UiLoader {
         let watch_path = Path::new(".");
         
         // 开始监控目录
-        watcher.watch(watch_path, RecursiveMode::Recursive)?;
-        
+        watcher.watch(watch_path, RecursiveMode::NonRecursive)?;
+
         // 在新线程中处理文件系统事件
         let handle = thread::spawn(move || {
             Self::handle_fs_events(rx);

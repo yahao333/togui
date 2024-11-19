@@ -103,7 +103,8 @@ impl UiLoader {
         // }
 
         // 要监控的目录路径
-        let watch_path = Path::new("./assets");
+        let current_dir = std::env::current_dir().expect("Failed to get current directory");
+        let watch_path = current_dir.join("assets");
         
         // 开始监控目录
         watcher.watch(watch_path, RecursiveMode::Recursive)?;        

@@ -3,6 +3,7 @@ use std::path::Path;
 use std::sync::mpsc::{channel, Receiver};
 use std::thread;
 use std::time::Duration;
+use std::sync::mpsc::RecvTimeoutError
 
 fn main() -> Result<()> {
     // 创建通道用于线程间通信

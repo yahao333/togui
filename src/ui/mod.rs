@@ -95,31 +95,72 @@ impl UiLoader {
 
     pub fn start_watching(&mut self) -> Result<(), LoaderError> {
         debug_log!("Starting UI file watcher");
+        let watch_paths = self.watch_paths.clone();
+        let event_proxy = self.event_proxy.clone();
 
+        // let (tx, rx) = mpsc::channel();
+        // let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
+
+        // for path in &self.watch_paths {
+        //     debug_log!("Watching path: {:?}", path);
+        //     watcher.watch(path, RecursiveMode::NonRecursive)
+        //         .map_err(LoaderError::NotifyError)?;
+        // }
+
+        // let event_proxy = self.event_proxy.clone();
+        // let path = self.watch_paths[0].clone();
         
         std::thread::spawn(move || {
-            let (tx, rx) = mpsc::channel();
-            let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
-    
-            for path in &self.watch_paths {
-                debug_log!("Watching path: {:?}", path);
-                watcher.watch(path, RecursiveMode::NonRecursive)
-                    .map_err(LoaderError::NotifyError)?;
-            }
-    
-            let event_proxy = self.event_proxy.clone();
-            let path = self.watch_paths[0].clone();
-                        
             let mut last_reload = std::time::Instant::now();
 
-            // loop {
-                while let Ok(event) = rx.recv() {
-                    debug_log!("Raw event received: {:?}", event);
-                    match event {
-                        Ok(event) => println!("event: {:?}", event),
-                        Err(e) => println!("watch error: {:?}", e),
+            let (tx, rx) = mpsc::channel();
+            match notify::recommended_watcher(tx) {
+                Ok(mut watcher) => {
+                    // 设置监视路径
+                    for path in &watch_paths {
+                        debug_log!("Watching path: {:?}", path);
+                        if let Err(e) = watcher.watch(path, RecursiveMode::NonRecursive) {
+                            debug_log!("Failed to watch path: {:?}", e);
+                            return;
+                        }
+                    }
+    
+                    let path = watch_paths[0].clone();
+                    let mut last_reload = std::time::Instant::now();
+    
+                    // 开始事件循环
+                    while let Ok(event) = rx.recv() {
+                        debug_log!("Raw event received: {:?}", event);
+                        if let Ok(notify::Event { kind, .. }) = event {
+                            if matches!(kind, notify::EventKind::Modify(_)) {
+                                let now = std::time::Instant::now();
+                                let duration = now.duration_since(last_reload).as_millis();
+                                
+                                if duration > 100 {
+                                    if let Some(proxy) = &event_proxy {
+                                        match std::fs::read_to_string(&path) {
+                                            Ok(content) => {
+                                                debug_log!("File content read, length: {}", content.len());
+                                                if let Err(e) = proxy.send_event(CustomEvent::Reload(content)) {
+                                                    debug_log!("Failed to send reload event: {:?}", e);
+                                                } else {
+                                                    last_reload = now;
+                                                }
+                                            }
+                                            Err(e) => debug_log!("Failed to read file: {:?}", e),
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+                Err(e) => {
+                    debug_log!("Failed to create watcher: {:?}", e);
+                }
+            }
+            // loop {
+
 
                 // if let Ok(event) = rx.recv() {
                 //     debug_log!("Received file system event: {:?}", event);

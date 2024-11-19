@@ -63,6 +63,9 @@ impl Window {
         let mut renderer = self.renderer;
         let event_loop = self.event_loop;
 
+        let mut frame_count = 0;
+        let mut last_time = std::time::Instant::now();
+
         event_loop.run(move |event, _, control_flow| {
             *control_flow = ControlFlow::Poll;
 
@@ -96,6 +99,14 @@ impl Window {
                     }
                 }                
                 Event::RedrawRequested(_) => {
+                    frame_count += 1;
+                    let now = std::time::Instant::now();
+                    if now.duration_since(last_time).as_secs() >= 1 {
+                        debug_log!("FPS: {}", frame_count);
+                        frame_count = 0;
+                        last_time = now;
+                    }
+
                     renderer.clear([64, 64, 64, 255]);
                     
                     // 绘制所有组件
@@ -103,7 +114,7 @@ impl Window {
                         widget.draw(&mut renderer);
                     }
                     
-                    renderer.render().unwrap();
+                    // renderer.render().unwrap();
                 }
                 Event::MainEventsCleared => {
                     window.request_redraw();

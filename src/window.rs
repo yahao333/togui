@@ -8,6 +8,7 @@ use winit::{
     window::{Window as WinitWindow, WindowBuilder},
 };
 use crate::ui::parser::parse_ui;
+use crate::debug_log;
 
 #[derive(Debug, Clone)]
 pub enum CustomEvent {

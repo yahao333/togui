@@ -8,7 +8,7 @@ fn main() {
     loader.set_event_proxy(window.get_event_proxy());
     // 加载UI文件
     let content = loader.load("examples/demo.ui").unwrap();
-    let container = parse_ui(&content);
+    let container = parse_ui(&content).expect("Failed to parse UI");
     window.add_widget(container);
 
     // 启动热重载

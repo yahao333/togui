@@ -23,7 +23,7 @@ pub fn parse_ui(content: &str) -> Result<Container, ParseError> {
         let line = line.trim();
         if line.starts_with("Container") {
             // 解析容器属性
-            parse_container(&mut container, line);
+            let _ = parse_container(&mut container, line);
         } else if line.starts_with("Button") {
             // 解析按钮
             if let Some(button) = parse_button(line) {

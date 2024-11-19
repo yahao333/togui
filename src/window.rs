@@ -7,6 +7,7 @@ use winit::{
     event_loop::{ControlFlow, EventLoop, EventLoopProxy},
     window::{Window as WinitWindow, WindowBuilder},
 };
+use crate::ui::parser::parse_ui;
 
 #[derive(Debug, Clone)]
 pub enum CustomEvent {

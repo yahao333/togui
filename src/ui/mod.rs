@@ -52,10 +52,9 @@ impl UiLoader {
     pub fn reload(&self) -> io::Result<()> {
         if let Some(path) = &self.current_path {
             let content = std::fs::read_to_string(path)?;
-            let container = parse_ui(&content);
             
             if let Some(proxy) = &self.event_proxy {
-                proxy.send_event(CustomEvent::Reload(container))
+                proxy.send_event(CustomEvent::Reload(content))
                     .expect("Failed to send reload event");
             }
         }

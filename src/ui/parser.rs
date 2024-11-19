@@ -1,7 +1,20 @@
+use std::io;
 use crate::{Container, Button, Text};
 use crate::layout::{Direction, Alignment, Padding};
 
-pub fn parse_ui(content: &str) -> Container {
+#[derive(Debug)]
+pub enum ParseError {
+    InvalidFormat(String),
+    IoError(io::Error),
+}
+
+impl From<io::Error> for ParseError {
+    fn from(err: io::Error) -> Self {
+        ParseError::IoError(err)
+    }
+}
+
+pub fn parse_ui(content: &str) -> Result<Container, ParseError> {
     // 这里先实现一个简单的解析器
     let mut lines = content.lines();
     let mut container = Container::new(0.0, 0.0, 800.0, 600.0);
@@ -24,10 +37,10 @@ pub fn parse_ui(content: &str) -> Container {
         }
     }
 
-    container
+    Ok(container)
 }
 
-fn parse_container(container: &mut Container, line: &str) {
+fn parse_container(container: &mut Container, line: &str) -> Result<(), ParseError> {
     // 简单的属性解析
     if line.contains("vertical") {
         container.with_direction(Direction::Vertical);
@@ -38,6 +51,7 @@ fn parse_container(container: &mut Container, line: &str) {
     if line.contains("center") {
         container.with_alignment(Alignment::Center);
     }
+    Ok(())
 }
 
 fn parse_button(line: &str) -> Option<Button> {

@@ -82,10 +82,15 @@ impl Window {
                 }
                 Event::UserEvent(CustomEvent::Reload(content)) => {
                     // 解析新的UI内容
-                    if let Ok(container) = parse_ui(&content) {
-                        widgets.clear();
-                        widgets.push(Box::new(container));
-                        window.request_redraw();
+                    match parse_ui(&content) {
+                        Ok(container) => {
+                            widgets.clear();
+                            widgets.push(Box::new(container));
+                            window.request_redraw();
+                        }
+                        Err(e) => {
+                            println!("Failed to parse UI: {:?}", e);
+                        }
                     }
                 }                
                 Event::RedrawRequested(_) => {

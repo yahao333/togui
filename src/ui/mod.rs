@@ -15,6 +15,31 @@ use crate::window::CustomEvent;
 
 pub use parser::parse_ui;
 
+#[derive(Debug)]
+pub enum LoaderError {
+    IoError(io::Error),
+    NotifyError(notify::Error),
+    ParseError(ParseError),
+}
+
+impl From<io::Error> for LoaderError {
+    fn from(err: io::Error) -> Self {
+        LoaderError::IoError(err)
+    }
+}
+
+impl From<notify::Error> for LoaderError {
+    fn from(err: notify::Error) -> Self {
+        LoaderError::NotifyError(err)
+    }
+}
+
+impl From<ParseError> for LoaderError {
+    fn from(err: ParseError) -> Self {
+        LoaderError::ParseError(err)
+    }
+}
+
 pub struct UiLoader {
     watch_paths: Vec<PathBuf>,
     watcher: Option<notify::RecommendedWatcher>,
@@ -61,12 +86,13 @@ impl UiLoader {
         Ok(())
     }
 
-    pub fn start_watching(&mut self) -> io::Result<()> {
+    pub fn start_watching(&mut self) -> Result<(), LoaderError> {
         let (tx, rx) = channel();
-        let mut watcher = recommended_watcher(tx)?;
+        let mut watcher = recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
         for path in &self.watch_paths {
-            watcher.watch(path, RecursiveMode::NonRecursive)?;
+            watcher.watch(path, RecursiveMode::NonRecursive)
+                .map_err(LoaderError::NotifyError)?;
         }
 
         let event_proxy = self.event_proxy.clone();

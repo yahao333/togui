@@ -200,7 +200,7 @@ impl UiLoader {
         });
         // Block forever, printing out events as they come in
 
-        self.watcher = Some(watcher);
+        // self.watcher = Some(watcher);
         Ok(())
     }
 }

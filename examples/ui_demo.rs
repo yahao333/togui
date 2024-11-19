@@ -12,10 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     window.add_widget(container);
 
     // 启动热重载
-    loader.start_watching(|| {
-        println!("UI file changed, reloading...");
-        // TODO: 实现重新加载逻辑
-    });
+    loader.start_watching();
 
     window.run();
     Ok(())

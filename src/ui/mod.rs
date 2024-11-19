@@ -102,7 +102,7 @@ impl UiLoader {
         let (tx, rx) = channel();
 
         // 创建一个 watcher
-        let mut watcher = notify::recommended_watcher(move |result: Result<NotifyEvent>| {
+        let mut watcher = notify::recommended_watcher(move |result: notify::Result<notify::Event>| {
             match result {
                 Ok(event) => tx.send(event).unwrap(),
                 Err(e) => println!("监控错误: {:?}", e),

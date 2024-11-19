@@ -3,7 +3,7 @@ pub mod parser;
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::{Path, PathBuf};
-use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult, Event};
+use notify::{Watcher, RecursiveMode, recommended_watcher, Result as NotifyResult, Event as NotifyEvent};
 use std::time::Duration;
 use winit::{
     event::{Event, WindowEvent},
@@ -102,7 +102,7 @@ impl UiLoader {
         let (tx, rx) = channel();
 
         // 创建一个 watcher
-        let mut watcher = notify::recommended_watcher(move |result: notify::Result<notify::Event>| {
+        let mut watcher = notify::recommended_watcher(move |result: Result<NotifyEvent>| {
             match result {
                 Ok(event) => tx.send(event).unwrap(),
                 Err(e) => println!("监控错误: {:?}", e),
@@ -169,7 +169,7 @@ impl UiLoader {
         Ok(())
     }
 
-    fn handle_fs_events(rx: Receiver<Event>) {
+    fn handle_fs_events(rx: Receiver<NotifyEvent>) {
         loop {
             match rx.recv_timeout(Duration::from_secs(1)) {
                 Ok(event) => {

@@ -10,7 +10,7 @@ license = "MIT"
 winit = "0.28"  # 窗口管理
 pixels = "0.13.0"  # 像素级渲染
 glam = "0.24.1"  # 数学运算库
-notify = "7.0.0"
+notify = { version = "7.0.0", features = ["serde"] }
 
 [dev-dependencies]
 env_logger = "0.10"

@@ -107,7 +107,7 @@ impl UiLoader {
         let watch_path = current_dir.join("assets");
         
         // 开始监控目录
-        watcher.watch(watch_path, RecursiveMode::Recursive)?;        
+        watcher.watch(&watch_path, RecursiveMode::Recursive)?;        
 
         let event_proxy = self.event_proxy.clone();
         let path = self.watch_paths[0].clone();

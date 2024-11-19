@@ -116,7 +116,7 @@ impl UiLoader {
                         let duration = now.duration_since(last_reload).as_millis();
                         debug_log!("Time since last reload: {}ms", duration);                        
                         // 确保两次重载之间至少间隔 100ms
-                        if duration > 100 {
+                        if duration > 200 {
                             debug_log!("Attempting to reload file");
                             if let Some(proxy) = &event_proxy {
                                 std::thread::sleep(Duration::from_millis(100));

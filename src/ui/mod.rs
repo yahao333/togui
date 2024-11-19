@@ -96,10 +96,6 @@ impl UiLoader {
         let (tx, rx) = channel();
         let mut watcher = recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
-        // 使用更细粒度的配置
-        let mut config = notify::Config::default();
-        config.poll_interval();
-
         for path in &self.watch_paths {
             debug_log!("Watching path: {:?}", path);
             watcher.watch(path, RecursiveMode::NonRecursive)

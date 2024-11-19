@@ -96,16 +96,17 @@ impl UiLoader {
         let (tx, rx) = channel();
         let mut watcher = recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
-        // for path in &self.watch_paths {
-        //     debug_log!("Watching path: {:?}", path);
-        //     watcher.watch(path, RecursiveMode::Recursive)
-        //         .map_err(LoaderError::NotifyError)?;
-        // }
-    // 要监控的目录路径
-    let watch_path = Path::new(".");
-    
-    // 开始监控目录
-    watcher.watch(watch_path, RecursiveMode::Recursive)?;        
+        for path in &self.watch_paths {
+            debug_log!("Watching path: {:?}", path);
+            watcher.watch(path, RecursiveMode::Recursive)
+                .map_err(LoaderError::NotifyError)?;
+        }
+
+        // // 要监控的目录路径
+        // let watch_path = Path::new(".");
+        
+        // // 开始监控目录
+        // watcher.watch(watch_path, RecursiveMode::Recursive)?;        
 
         let event_proxy = self.event_proxy.clone();
         let path = self.watch_paths[0].clone();

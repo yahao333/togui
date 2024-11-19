@@ -95,19 +95,21 @@ impl UiLoader {
 
     pub fn start_watching(&mut self) -> Result<(), LoaderError> {
         debug_log!("Starting UI file watcher");
-        let (tx, rx) = mpsc::channel();
-        let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
 
-        for path in &self.watch_paths {
-            debug_log!("Watching path: {:?}", path);
-            watcher.watch(path, RecursiveMode::NonRecursive)
-                .map_err(LoaderError::NotifyError)?;
-        }
-
-        let event_proxy = self.event_proxy.clone();
-        let path = self.watch_paths[0].clone();
         
         std::thread::spawn(move || {
+            let (tx, rx) = mpsc::channel();
+            let mut watcher = notify::recommended_watcher(tx).map_err(LoaderError::NotifyError)?;
+    
+            for path in &self.watch_paths {
+                debug_log!("Watching path: {:?}", path);
+                watcher.watch(path, RecursiveMode::NonRecursive)
+                    .map_err(LoaderError::NotifyError)?;
+            }
+    
+            let event_proxy = self.event_proxy.clone();
+            let path = self.watch_paths[0].clone();
+                        
             let mut last_reload = std::time::Instant::now();
 
             // loop {

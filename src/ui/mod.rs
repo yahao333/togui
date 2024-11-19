@@ -106,16 +106,24 @@ impl UiLoader {
         let path = self.watch_paths[0].clone();
         
         std::thread::spawn(move || {
+            let mut last_reload = std::time::Instant::now();
+
             loop {
                 if let Ok(event) = rx.recv() {
+                    debug_log!("Received file system event: {:?}", event);
                     if let Ok(notify::Event { kind: notify::EventKind::Modify(_), .. }) = event {
-                        if let Some(proxy) = &event_proxy {
-                            std::thread::sleep(Duration::from_millis(100));
-                            match std::fs::read_to_string(&path) {
-                                Ok(content) => {
-                                    let _ = proxy.send_event(CustomEvent::Reload(content));
+                        let now = std::time::Instant::now();
+                        // 确保两次重载之间至少间隔 100ms
+                        if now.duration_since(last_reload).as_millis() > 100 {
+                            if let Some(proxy) = &event_proxy {
+                                std::thread::sleep(Duration::from_millis(100));
+                                match std::fs::read_to_string(&path) {
+                                    Ok(content) => {
+                                        let _ = proxy.send_event(CustomEvent::Reload(content));
+                                        last_reload = now;
+                                    }
+                                    Err(e) => println!("Failed to read UI file: {}", e),
                                 }
-                                Err(e) => println!("Failed to read UI file: {}", e),
                             }
                         }
                     }
